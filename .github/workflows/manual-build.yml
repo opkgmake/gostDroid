@@ -31,7 +31,8 @@ jobs:
         run: |
           yes | sdkmanager --licenses
           sdkmanager "platform-tools" "build-tools;19.1.0" "platforms;android-19" \
-            "extras;android;m2repository" "extras;google;m2repository" "tools"
+            "extras;android;m2repository" "extras;google;m2repository" \
+            "extras;android;support" "tools"
 
       - name: Prepare appcompat support project
         run: |
