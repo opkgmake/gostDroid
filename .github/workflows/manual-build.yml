@@ -14,6 +14,18 @@ jobs:
           distribution: temurin
           java-version: '8'
 
+      - name: Install Android command-line tools
+        run: |
+          set -e
+          mkdir -p "$ANDROID_HOME/cmdline-tools"
+          cd "$ANDROID_HOME/cmdline-tools"
+          curl -fo commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+          rm -rf latest cmdline-tools
+          unzip -qo commandlinetools.zip
+          mv cmdline-tools latest
+          rm commandlinetools.zip
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+
       - name: Install Android SDK components
         run: |
           yes | sdkmanager --licenses
