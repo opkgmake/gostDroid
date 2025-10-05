@@ -1,0 +1,39 @@
+name: Manual Android build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+
+      - name: Install Android SDK components
+        run: |
+          yes | sdkmanager --licenses
+          sdkmanager "platform-tools" "build-tools;19.1.0" "platforms;android-19" \
+            "extras;android;m2repository" "extras;google;m2repository" "tools"
+
+      - name: Prepare appcompat support project
+        run: |
+          rm -rf ../appcompat_v7_4
+          cp -R "$ANDROID_HOME/extras/android/support/v7/appcompat" ../appcompat_v7_4
+
+      - name: Generate Ant files and build
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
+        run: |
+          export JAVA_HOME=${{ steps.setup-java.outputs.java-home }}
+          android update project --path . --target android-19
+          ant debug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gostDroid-debug-apk
+          path: bin/gostDroid-debug.apk
