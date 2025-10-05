@@ -9,10 +9,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v4
+      - name: Set up Java 17 for Android SDK Manager
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '8'
+          java-version: '17'
 
       - name: Install Android command-line tools
         run: |
@@ -37,11 +38,18 @@ jobs:
           rm -rf ../appcompat_v7_4
           cp -R "$ANDROID_HOME/extras/android/support/v7/appcompat" ../appcompat_v7_4
 
+      - name: Set up Java 8 for Ant build
+        id: setup-java-8
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+
       - name: Generate Ant files and build
         env:
           ANDROID_HOME: ${{ env.ANDROID_HOME }}
         run: |
-          export JAVA_HOME=${{ steps.setup-java.outputs.java-home }}
+          export JAVA_HOME=${{ steps.setup-java-8.outputs.java-home }}
           android update project --path . --target android-19
           ant debug
 
